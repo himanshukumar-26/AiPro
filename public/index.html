@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#142d24" />
+  <meta name="description" content="Forecast agricultural commodity prices from mandi history using transparent time-series models." />
+  <title>HarvestIQ — Agricultural Price Predictor</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#overview" aria-label="HarvestIQ home">
+        <span class="brand-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M25.9 5.5C15.4 5.2 7.1 8.1 6 16.2c-.7 5 3.2 8.6 7.7 7.1 8.7-2.8 12-10.7 12.2-17.8Z" fill="currentColor" opacity=".95"/><path d="M5.7 27.1c4.2-7.4 8.5-11.5 15.7-16" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round"/></svg></span>
+        <span><strong>HarvestIQ</strong><small>MARKET INTELLIGENCE</small></span>
+      </a>
+      <section class="sidebar-guide" aria-label="A practical forecast checklist">
+        <div class="sidebar-guide-card">
+          <div class="sidebar-guide-topline"><span>MARKET GUIDE</span><span class="sidebar-guide-count">3 STEPS</span></div>
+          <div class="sidebar-guide-heading">
+            <span class="sidebar-guide-mark" aria-hidden="true">↗</span>
+            <div><span class="sidebar-guide-kicker">A PRACTICAL CHECK</span><h2>Put the forecast in context</h2></div>
+          </div>
+          <p class="sidebar-guide-intro">Use the estimate as one helpful signal when planning your next market visit.</p>
+          <ol class="sidebar-steps">
+            <li><span>01</span><div><strong>Choose your crop</strong><small>Select the commodity and mandi.</small></div></li>
+            <li><span>02</span><div><strong>Read the trend</strong><small>Compare the forecast with recent prices.</small></div></li>
+            <li><span>03</span><div><strong>Check the local rate</strong><small>Confirm today’s official mandi price.</small></div></li>
+          </ol>
+        </div>
+      </section>
+      <div class="sidebar-note">
+        <div class="note-icon">🌿</div>
+        <strong>Data-first decisions</strong>
+        <p>Forecasts are estimates. Check current local prices before making a decision.</p>
+      </div>
+      <div class="sidebar-footer"><span class="status-dot"></span>Agricultural forecasting<span class="version">v1.0</span></div>
+    </aside>
+
+    <main class="main-content" id="overview">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobileMenu" aria-label="Open menu">☰</button>
+        <div class="breadcrumb"><b>Market dashboard</b></div>
+        <div class="top-actions">
+          <div class="local-badge"><span class="status-dot"></span> ACTIVE</div>
+          <button class="btn btn-outline" id="importTopBtn"><span>＋</span> Import data</button>
+          <input type="file" id="csvFileInput" accept=".csv,text/csv" hidden />
+        </div>
+      </header>
+
+      <section class="welcome-row">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-line"></span> AGRICULTURAL MARKET INTELLIGENCE</div>
+          <h1>Price signals, <em>made clearer.</em></h1>
+          <p class="welcome-subtitle">Analyze mandi price history and estimate where your commodity could move next.</p>
+        </div>
+        <div class="date-card"><span class="date-icon">◷</span><div><small>LAST UPDATED</small><strong id="lastUpdated">—</strong></div></div>
+      </section>
+
+      <section class="control-panel" aria-label="Forecast controls">
+        <div class="control-heading"><div><strong>Forecast workspace</strong><p>Choose the market series you want to analyze.</p></div><span class="dataset-pill"><span class="status-dot"></span><span id="datasetStatus">DEMO DATA</span></span></div>
+        <div class="controls-grid">
+          <label class="field"><span>COMMODITY</span><select id="commoditySelect"></select></label>
+          <label class="field"><span>MANDI / MARKET</span><select id="marketSelect"></select></label>
+          <label class="field"><span>FORECAST HORIZON</span><select id="horizonSelect"><option value="7">Next 7 days</option><option value="14">Next 14 days</option><option value="30" selected>Next 30 days</option><option value="60">Next 60 days</option></select></label>
+          <label class="field"><span>FORECAST MODEL</span><select id="modelSelect"><option value="ensemble">Smart ensemble</option><option value="ridge">Ridge ML (lag features)</option><option value="linear">Linear regression</option><option value="moving">Moving average</option></select></label>
+        </div>
+        <div class="control-foot"><span>◉</span> Forecasts are estimates from the selected dataset—not official mandi quotes or guaranteed future prices.</div>
+      </section>
+
+      <section class="kpi-grid" aria-label="Key metrics">
+        <article class="kpi-card"><div class="kpi-top"><span class="kpi-label">LATEST MODAL PRICE</span><span class="kpi-icon green">₹</span></div><div class="kpi-value" id="latestPrice">—</div><div class="kpi-foot"><span id="latestDate">Latest observation</span><span class="tiny-tag">₹ / quintal</span></div></article>
+        <article class="kpi-card"><div class="kpi-top"><span class="kpi-label">FORECAST AVG.</span><span class="kpi-icon blue">⌁</span></div><div class="kpi-value" id="forecastAvg">—</div><div class="kpi-foot"><span id="forecastAvgFoot">Next 30 days</span><span class="tiny-tag">₹ / quintal</span></div></article>
+        <article class="kpi-card"><div class="kpi-top"><span class="kpi-label">ESTIMATED PRICE CHANGE</span><span class="kpi-icon amber">↗</span></div><div class="kpi-value" id="priceChange">—</div><div class="kpi-foot"><span id="changeFoot">Forecast end vs latest</span><span id="changeTag" class="tiny-tag">—</span></div></article>
+        <article class="kpi-card"><div class="kpi-top"><span class="kpi-label">HISTORICAL OBSERVATIONS</span><span class="kpi-icon violet">▤</span></div><div class="kpi-value" id="observationCount">—</div><div class="kpi-foot"><span id="dateCoverage">Selected series</span><span class="tiny-tag">records</span></div></article>
+      </section>
+
+      <section class="content-grid" id="forecast">
+        <article class="panel chart-panel">
+          <div class="panel-header"><div><div class="panel-kicker">PRICE HISTORY & OUTLOOK</div><h2>Market price trend</h2><p id="chartSubtitle">Historical prices and model projection</p></div></div>
+          <div class="chart-legend"><span><i class="legend-dot history-dot"></i>Historical modal price</span><span><i class="legend-line forecast-legend"></i>Forecast</span><span><i class="legend-band"></i>Estimated range</span></div>
+          <div class="chart-wrap"><canvas id="priceChart" aria-label="Historical price and forecast chart" role="img"></canvas><div id="chartEmpty" class="chart-empty hidden">No matching observations. Import a CSV with dates and modal prices.</div></div>
+          <div class="chart-footer"><span><span class="status-dot"></span> <span id="chartDataStatus">Local model</span></span><span id="chartRangeText">—</span></div>
+        </article>
+
+        <article class="panel insight-panel">
+          <div class="panel-header"><div><div class="panel-kicker">QUICK READ</div><h2>Market pulse</h2></div><div class="pulse-mark" aria-hidden="true">↗</div></div>
+          <div class="pulse-main"><span class="pulse-label">MODEL SIGNAL</span><div class="pulse-signal"><span class="pulse-dot" id="pulseDot"></span><strong id="pulseSignal">Calculating</strong></div><p id="pulseSummary">Choose a commodity and market to see the forecast summary.</p></div>
+          <div class="insight-divider"></div>
+          <div class="mini-stat"><div><span>Recent 30-day move</span><small>Compared with the previous period</small></div><strong id="recentMove">—</strong></div>
+          <div class="mini-stat"><div><span>Recent volatility</span><small>Daily change standard deviation</small></div><strong id="volatility">—</strong></div>
+          <div class="insight-tip"><span class="tip-icon" aria-hidden="true">ⓘ</span><p id="localTip">Insights update when you change the commodity, market, or horizon.</p></div>
+        </article>
+      </section>
+
+      <section class="content-grid lower-grid" id="model-lab">
+        <article class="panel model-panel">
+          <div class="panel-header"><div><div class="panel-kicker">MODEL LAB</div><h2>Compare forecasting models</h2><p>Walk-forward backtest on the latest historical observations.</p></div><span class="metric-badge">LOWER MAE IS BETTER</span></div>
+          <div class="model-table-wrap"><table class="model-table"><thead><tr><th>MODEL</th><th>MAE <span>(₹)</span></th><th>RMSE <span>(₹)</span></th><th>MAPE</th><th>STATUS</th></tr></thead><tbody id="modelMetricsBody"><tr><td colspan="5" class="table-placeholder">Metrics will appear when data is loaded.</td></tr></tbody></table></div>
+          <div class="model-footnote"><span>ⓘ</span> Backtest scores are measured on held-out observations from your selected series. They are not a guarantee of future accuracy.</div>
+        </article>
+      </section>
+
+      <section class="panel market-guide-panel" aria-labelledby="marketGuideTitle">
+          <div class="panel-header"><div><div class="panel-kicker">PRACTICAL MARKET GUIDE</div><h2 id="marketGuideTitle">What could this mean for you?</h2></div><span class="guide-chip">MODEL ANALYSIS</span></div>
+          <p class="guide-intro">A quick, easy-to-read guide based on the selected commodity, market, and forecast.</p>
+          <div class="guide-summary" id="guideSummary" aria-live="polite">
+            <span class="guide-icon" aria-hidden="true">↗</span>
+            <div><strong>Your market guide updates with your selections.</strong><p>It summarizes the expected direction, price range, and a few sensible checks before you make a decision.</p></div>
+          </div>
+          <div class="guide-grid">
+            <div class="guide-item"><span class="guide-label">FORECAST DIRECTION</span><strong id="guideDirection">Waiting for forecast</strong><p id="guideDirectionNote">Choose a series with at least 3 observations.</p></div>
+            <div class="guide-item"><span class="guide-label">ESTIMATED END PRICE</span><strong id="guideEndPrice">—</strong><p id="guideRange">Estimated range: —</p></div>
+            <div class="guide-item"><span class="guide-label">BEFORE YOU SELL OR BUY</span><strong>Check local conditions</strong><p>Compare today’s mandi rate, quality grade, transport cost, and nearby markets.</p></div>
+          </div>
+          <p class="guide-disclaimer">This guide is based on a forecast, not a guarantee. Check current official mandi prices before making farming or trading decisions.</p>
+      </section>
+
+      <section class="panel forecast-table-panel">
+        <div class="panel-header"><div><div class="panel-kicker">DAY-BY-DAY OUTLOOK</div><h2>Forecast details</h2><p id="forecastTableSubtitle">Estimated modal price by day</p></div><button class="btn btn-small btn-outline" id="exportForecastBtn">⇩ Export CSV</button></div>
+        <div class="forecast-table-wrap"><table class="forecast-table"><thead><tr><th>DATE</th><th>DAY</th><th>PREDICTED PRICE</th><th>ESTIMATED RANGE</th><th>CHANGE VS. LATEST</th><th>SIGNAL</th></tr></thead><tbody id="forecastTableBody"><tr><td colspan="6" class="table-placeholder">Forecast rows will appear here.</td></tr></tbody></table></div>
+        <div class="table-bottom"><span id="forecastRowsCount">—</span><span>Prices shown in Indian rupees per quintal</span></div>
+      </section>
+
+      <section class="panel dataset-panel" id="dataset">
+        <div class="panel-header"><div><div class="panel-kicker">DATASET MANAGER</div><h2>Manage your market history</h2><p>Load your own Agmarknet CSV to replace the bundled demo dataset.</p></div></div>
+        <div class="dataset-grid">
+          <div class="upload-drop" id="dropZone"><div class="upload-symbol" aria-hidden="true">⇧</div><div><strong>Drop your CSV file here</strong><p>or use <strong>Import data</strong> at the top of the page</p></div><small>CSV · Up to 25 MB · Recommended columns: Arrival_Date, Commodity, Market, Modal_Price</small></div>
+          <div class="dataset-facts"><div class="fact-row"><span>Current dataset</span><strong id="datasetName">Bundled demo data</strong></div><div class="fact-row"><span>Total rows loaded</span><strong id="datasetRows">—</strong></div><div class="fact-row"><span>Commodity types</span><strong id="datasetCommodities">—</strong></div><div class="fact-row"><span>Markets found</span><strong id="datasetMarkets">—</strong></div><div class="fact-row"><span>Date coverage</span><strong id="datasetDates">—</strong></div></div>
+        </div>
+        <div class="dataset-warning hidden" id="demoDataNotice"><span>ⓘ</span><p><strong>Demo data notice:</strong> The bundled prices are synthetic examples generated for demonstrating the application. They are not official Agmarknet prices. Replace them with a downloaded dataset before using forecasts for real decisions.</p></div>
+      </section>
+
+      <footer class="page-footer"><div><span class="footer-logo">HarvestIQ</span><span>Built for agricultural market analysis</span></div><span>Forecasts are experimental • Verify prices with official market sources</span></footer>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  
+<script src="/js/app.js" defer></script>
+</body>
+</html>

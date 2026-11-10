@@ -1,0 +1,22 @@
+# Technology inventory for this Node.js app;
+[Languages]
+JavaScript
+HTML5
+CSS3
+
+[Runtime and package manager]
+Node.js >= 18
+npm
+node_modules
+
+[Technique and methods]
+Linear regression
+Moving average
+Ridge ML (lag features)
+Smart ensemble
+
+[Other technologies]
+Vanilla JS
+express@^5.3.0
+Canvas 2D API
+CSV
