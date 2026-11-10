@@ -5,6 +5,7 @@ const app = express();
 const publicDirectory = path.join(__dirname, 'public');
 const port = Number(process.env.PORT) || 3000;
 
+
 app.use(express.json({ limit: '80kb' }));
 app.use(express.static(publicDirectory));
 
